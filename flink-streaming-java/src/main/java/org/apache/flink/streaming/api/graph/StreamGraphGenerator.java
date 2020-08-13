@@ -160,7 +160,7 @@ public class StreamGraphGenerator {
 
 		// call at least once to trigger exceptions about MissingTypeInfo
 		transform.getOutputType();
-
+		// 根据StreamTransformation的类型做不同操作
 		Collection<Integer> transformedIds;
 		if (transform instanceof OneInputTransformation<?, ?>) {
 			transformedIds = transformOneInputTransform((OneInputTransformation<?, ?>) transform);
@@ -523,16 +523,20 @@ public class StreamGraphGenerator {
 	 * wired the inputs to this new node.
 	 */
 	private <IN, OUT> Collection<Integer> transformOneInputTransform(OneInputTransformation<IN, OUT> transform) {
-
+		// 获取当前StreamTransformation的inputs
 		Collection<Integer> inputIds = transform(transform.getInput());
 
 		// the recursive call might have already transformed this
+		// 同一个StreamTransformation节点不重复处理
 		if (alreadyTransformed.containsKey(transform)) {
 			return alreadyTransformed.get(transform);
 		}
 
+		// 判断当前operation可以和哪些operation chain到同一个slot
+		// 和JobGraph上做的chain操作不同,这里是用户指定的chain组合策略,用以强制覆盖Flink自带的组合逻辑
 		String slotSharingGroup = determineSlotSharingGroup(transform.getSlotSharingGroup(), inputIds);
 
+		// 将当前StreamTransformation作为StreamNode加入到StreamGraph
 		streamGraph.addOperator(transform.getId(),
 				slotSharingGroup,
 				transform.getOperator(),
@@ -540,14 +544,18 @@ public class StreamGraphGenerator {
 				transform.getOutputType(),
 				transform.getName());
 
+		// 处理KeySelector
 		if (transform.getStateKeySelector() != null) {
 			TypeSerializer<?> keySerializer = transform.getStateKeyType().createSerializer(env.getConfig());
 			streamGraph.setOneInputStateKey(transform.getId(), transform.getStateKeySelector(), keySerializer);
 		}
 
+		// 设置并行度
 		streamGraph.setParallelism(transform.getId(), transform.getParallelism());
 		streamGraph.setMaxParallelism(transform.getId(), transform.getMaxParallelism());
 
+		// 添加由input指向当前StreamTransformation的边
+		// 这个过程也会合并掉一些"逻辑节点", 如union/partition等等
 		for (Integer inputId: inputIds) {
 			streamGraph.addEdge(inputId, transform.getId(), 0);
 		}

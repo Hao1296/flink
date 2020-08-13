@@ -229,6 +229,8 @@ public class ExecutionGraphBuilder {
 		if (log.isDebugEnabled()) {
 			log.debug("Adding {} vertices from job graph {} ({}).", sortedTopology.size(), jobName, jobId);
 		}
+
+		// 由JobGraph转换为ExecutionGraph的核心逻辑
 		executionGraph.attachJobGraph(sortedTopology);
 
 		if (log.isDebugEnabled()) {

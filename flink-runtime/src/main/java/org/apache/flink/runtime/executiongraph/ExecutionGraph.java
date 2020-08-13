@@ -808,6 +808,13 @@ public class ExecutionGraph implements AccessExecutionGraph {
 	//  Actions
 	// --------------------------------------------------------------------------------------------
 
+	/**
+	 * 将JobGraph中的JobVertex加入到ExecutionGraph.
+	 *
+	 * 该方法不改变拓扑结构,只是将JobGraph中的元素作个转换后加到ExecutionGraph.
+	 *
+	 * @param topologiallySorted JobVertex列表
+	 */
 	public void attachJobGraph(List<JobVertex> topologiallySorted) throws JobException {
 
 		LOG.debug("Attaching {} topologically sorted vertices to existing job graph with {} " +
