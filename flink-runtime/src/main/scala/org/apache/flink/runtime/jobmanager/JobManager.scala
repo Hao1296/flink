@@ -118,6 +118,23 @@ import scala.language.postfixOps
  *
  * - [[JobStatusChanged]] indicates that the status of job (RUNNING, CANCELING, FINISHED, etc.) has
  * changed. This message is sent by the ExecutionGraph.
+ *
+ * @param flinkConfiguration
+ * @param futureExecutor
+ * @param ioExecutor
+ * @param instanceManager 管理TaskManager实例(如处理心跳信息等)
+ * @param scheduler
+ * @param blobServer 接收二进制大文件的服务(如用户上传的jar)
+ * @param libraryCacheManager
+ * @param archive
+ * @param restartStrategyFactory
+ * @param timeout
+ * @param leaderElectionService
+ * @param submittedJobGraphs
+ * @param checkpointRecoveryFactory
+ * @param jobRecoveryTimeout
+ * @param jobManagerMetricGroup
+ * @param optRestAddress
  */
 class JobManager(
     protected val flinkConfiguration: Configuration,

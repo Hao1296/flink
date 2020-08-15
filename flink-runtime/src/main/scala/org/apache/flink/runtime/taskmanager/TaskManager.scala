@@ -118,6 +118,17 @@ import scala.language.postfixOps
  *
  *    - Exceptions releasing intermediate result resources. Critical resource leak,
  *      requires a clean JVM.
+ *
+ * @param config
+ * @param resourceID
+ * @param location
+ * @param memoryManager Flink抽象了一套自己的内存管理机制, 而非全权委托给JVM
+ * @param ioManager 提供磁盘IO相关服务
+ * @param network 提供网络IO相关服务
+ * @param taskManagerLocalStateStoresManager
+ * @param numberOfSlots
+ * @param highAvailabilityServices
+ * @param taskManagerMetricGroup
  */
 class TaskManager(
     protected val config: TaskManagerConfiguration,
